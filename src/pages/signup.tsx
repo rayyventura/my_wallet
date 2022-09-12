@@ -1,51 +1,37 @@
 import type { NextPage } from 'next';
-import { BiHide } from 'react-icons/bi';
-import { BiShowAlt } from 'react-icons/bi';
-import { Icon } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
-
+import Head from 'next/head';
+import Image from 'next/image';
 import {
   Flex,
   Text,
   Input,
+  Box,
   InputGroup,
   InputRightElement,
   Button,
+  Icon,
 } from '@chakra-ui/react';
+import { BiHide } from 'react-icons/bi';
+import { BiShowAlt } from 'react-icons/bi';
 import styled from 'styled-components';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import FormFooter from '../components/FormFooter';
-import * as api from '../requests/api';
-import { useAppContext } from '../contexts/state';
-import { ThreeDots } from 'react-loader-spinner';
 
 const Login: NextPage = () => {
-  const [show, setShow] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [show, setShow] = React.useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
   const handleClick = () => setShow(!show);
-  const { signin } = useAppContext();
-  const auth = typeof window !== 'undefined' && localStorage.getItem('auth');
-  const router = useRouter();
-
-  useMemo(() => {
-    if (auth) {
-      typeof window !== 'undefined' && router.push('/register');
-    }
-  }, []);
 
   function handleChange({ name, value }: { name: string; value: string }) {
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [name]: [value] });
   }
-  async function handleSubmit(e: any) {
-    try {
-      e.preventDefault();
-      const token = await api.signIn(formData);
-      signin(token);
-      router.push('/register');
-    } catch (error: any) {
-      setLoading(false);
-    }
+  function handleSubmit(e: any) {
+    e.preventDefault();
+    console.log(formData);
   }
 
   return (
@@ -76,6 +62,27 @@ const Login: NextPage = () => {
         as="form"
         onSubmit={handleSubmit}
       >
+        <Input
+          placeholder="Name"
+          name="name"
+          w="100%"
+          focusBorderColor="white"
+          color="#00000090"
+          variant="filled"
+          fontWeight="bold"
+          fontFamily="Raleway"
+          fontSize="15px"
+          _placeholder={{
+            opacity: 0.5,
+            color: 'black',
+            fontWeight: 'bold',
+            fontFamily: 'Raleway',
+            fontSize: '15px',
+          }}
+          onChange={(e) =>
+            handleChange({ name: e.target.name, value: e.target.value })
+          }
+        />
         <Input
           placeholder="E-mail"
           name="email"
@@ -125,8 +132,6 @@ const Login: NextPage = () => {
           </InputRightElement>
         </InputGroup>
         <Button
-          isLoading={loading}
-          spinner={<ThreeDots height={13} width={200} color="white" />}
           colorScheme="whiteAlpha"
           variant="solid"
           w="300px"
@@ -135,10 +140,7 @@ const Login: NextPage = () => {
         >
           Submit
         </Button>
-        <FormFooter
-          path="/signup"
-          text="Still don't have an account? Sign-up"
-        />
+        <FormFooter path="/" text="Already has an account? Log-in" />
       </Flex>
     </Container>
   );
