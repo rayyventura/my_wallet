@@ -74,7 +74,7 @@ export default function Register() {
               );
             })
           ) : (
-            <Text alignSelf="center" color="#000000a8">
+            <Text alignSelf="center" color="#0000009e">
               There is no entries yet
             </Text>
           )}
