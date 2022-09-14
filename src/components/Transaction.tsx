@@ -6,7 +6,7 @@ import {
   InputLeftElement,
   Text,
 } from '@chakra-ui/react';
-import router from 'next/router';
+import router, { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
@@ -16,6 +16,7 @@ import InutWarning from './InutWarning';
 
 export default function Transaction({ title, button, type }: any) {
   const [error, setError] = useState<any>(null);
+  const router = useRouter();
   const { auth } = useAppContext();
   const {
     register,
@@ -85,6 +86,18 @@ export default function Transaction({ title, button, type }: any) {
       as="form"
       onSubmit={handleSubmit(handleRegistration, handleError)}
     >
+      <Text
+        color="white"
+        fontSize="18px"
+        cursor="pointer"
+        alignSelf="flex-start"
+        _hover={{ textDecoration: 'underline' }}
+        onClick={() => {
+          router.push('/register');
+        }}
+      >
+        return
+      </Text>
       <Text
         mb="5pxpx"
         fontFamily="Raleway"
