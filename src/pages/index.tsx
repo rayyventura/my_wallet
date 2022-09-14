@@ -166,6 +166,7 @@ const Login: NextPage = () => {
           w="300px"
           mt="5px"
           type="submit"
+          className="button-submit"
         >
           Submit
         </Button>
@@ -184,6 +185,14 @@ const Container = styled(Flex)`
   .input-box {
     @media (max-width: 500px) {
       width: 300px;
+    }
+    @media (max-width: 300px) {
+      width: 250px;
+    }
+  }
+  .button-submit {
+    @media (max-width: 300px) {
+      width: 250px;
     }
   }
 

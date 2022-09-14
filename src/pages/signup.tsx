@@ -52,7 +52,6 @@ const Login: NextPage = () => {
   async function handleRegistration(data: any) {
     try {
       await api.signUp(data);
-
       router.push('/');
     } catch (error: any) {
       Swal.fire({
@@ -166,6 +165,7 @@ const Login: NextPage = () => {
           mt="5px"
           type="submit"
           isLoading={loading}
+          className="button-submit"
         >
           Submit
         </Button>
@@ -181,6 +181,14 @@ const Container = styled(Flex)`
   .input-box {
     @media (max-width: 500px) {
       width: 300px;
+    }
+    @media (max-width: 300px) {
+      width: 250px;
+    }
+  }
+  .button-submit {
+    @media (max-width: 300px) {
+      width: 250px;
     }
   }
 `;
