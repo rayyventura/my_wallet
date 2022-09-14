@@ -17,9 +17,14 @@ export default function Header({ title }: any) {
 
   return (
     <Flex justifyContent="space-between" p="5px" w="90%" pt="9px">
-      <Text fontFamily="Raleway" fontWeight="700" color="white" fontSize="26px">
-        {' '}
-        {title}{' '}
+      <Text
+        fontFamily="Raleway"
+        fontWeight="700"
+        color="white"
+        fontSize="26px"
+        suppressHydrationWarning
+      >
+        {title}
       </Text>
       <Icon
         as={BiExit}

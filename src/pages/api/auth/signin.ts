@@ -8,5 +8,8 @@ export default async function handler(
 ) {
   const data = req.body;
   const loginData = await signin(data);
+  if (loginData.type === 'unauthorized') {
+    return res.status(401).send(loginData.message);
+  }
   res.status(201).send(loginData);
 }

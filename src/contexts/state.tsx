@@ -9,15 +9,22 @@ interface AuthData {
   token: string;
   userName: string;
 }
+interface AlertMessage {
+  type: 'success' | 'error';
+  text: string;
+}
 
 const AppContext = createContext<any>({});
 
 export function AppWrapper({ children }: AuxProps) {
   const [auth, setAuth] = useState({});
+
   useMemo(() => {
     if (typeof window !== 'undefined') {
       const persistedAuth = JSON.parse(localStorage.getItem('auth')!);
-      setAuth(persistedAuth);
+      if (persistedAuth) {
+        setAuth(persistedAuth);
+      }
     }
   }, []);
 

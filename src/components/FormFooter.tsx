@@ -11,6 +11,7 @@ export default function FormFooter({ path, text }: any) {
       fontFamily="Raleway"
       fontWeight="700"
       fontSize="15px"
+      _hover={{ color: '#c9defa' }}
     >
       <Link href={path}>{text}</Link>
     </Text>

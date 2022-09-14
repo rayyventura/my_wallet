@@ -7,6 +7,12 @@ export default async function handler(
   res: NextApiResponse<any>
 ) {
   const data = req.body;
-  await signup(data);
-  res.status(201).send({ message: 'User succesfully created' });
+
+  const response = await signup(data);
+
+  if (response.type === 'conflict') {
+    res.status(409).send(response.message);
+  } else {
+    res.status(201).send(response);
+  }
 }

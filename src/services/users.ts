@@ -10,10 +10,12 @@ export interface UserData {
 }
 async function signup(data: UserData) {
   const existingUser = await userRepository.findByEmail(data.email);
+
   if (existingUser) {
-    throw { type: 'error', message: 'user already exist' };
+    return { type: 'conflict', message: 'Email already in use' };
   }
   await userRepository.signup(data);
+  return { type: 'success', message: 'user already exist' };
 }
 
 async function signin(data: Omit<UserData, 'id'>) {
@@ -22,10 +24,7 @@ async function signin(data: Omit<UserData, 'id'>) {
   const secretJWT = process.env.JWT_SECRET;
 
   if (!existingUser || !secretJWT) {
-    throw {
-      type: 'error',
-      message: 'unauthorized ',
-    };
+    return { type: 'unauthorized', message: 'Invalid credentials' };
   } else {
     const comparePassword = bcrypt.compareSync(
       data.password,
@@ -39,7 +38,10 @@ async function signin(data: Omit<UserData, 'id'>) {
           token,
         },
       });
+
       return { token, userName: existingUser.name };
+    } else {
+      return { type: 'unauthorized', message: 'Invalid credentials' };
     }
   }
 }

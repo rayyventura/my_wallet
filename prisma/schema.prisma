@@ -17,11 +17,16 @@ model User {
   password String
   @@map("users")
   sessions Session[]
+  transactions Transaction[]
 }
 model Transaction {
  id Int @id @default(autoincrement())
  type String 
  ammount Int
+ description String
+ date String
+ userId Int
+ user User @relation(fields:[userId], references:[id]) 
 }
 
 model Session {

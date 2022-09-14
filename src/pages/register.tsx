@@ -7,21 +7,32 @@ import { IoMdAddCircleOutline } from 'react-icons/io';
 import { BiMinusCircle } from 'react-icons/bi';
 import { useAppContext } from '../contexts/state';
 import { useRouter } from 'next/router';
-import { signOut } from '../requests/api';
+import { Transaction } from '@prisma/client';
+import * as api from '../requests/api';
+import Entries from '../components/Entries';
 
 export default function Register() {
   const [registerStatus, setRegisterStatus] = useState<string>();
   const { auth, setAuth } = useAppContext();
+  const [transactions, setTransaction] = useState<Transaction[]>();
+  const [totalBalance, setTotalBalance] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
-    setRegisterStatus('filled');
     if (!auth) {
-      setAuth(null);
       router.replace('/');
+      setAuth(null);
+      return;
     }
+    getData();
+
+    setRegisterStatus('filled');
   }, []);
 
+  async function getData() {
+    const data = await api.getUserTransaction(auth?.token);
+    setTransaction(data);
+  }
   return (
     <Container
       flexDirection="column"
@@ -32,16 +43,69 @@ export default function Register() {
       bgGradient="linear(to-r,#6e1891 , #b132e4 50%,  #6e1891 200%)"
     >
       {auth && <Header title={`Hi, ${auth.userName}`} />}
+
       <Flex
         backgroundColor="white"
         w="90%"
         borderRadius="5px"
         className={registerStatus}
         p="12px"
-        h="500px"
+        flexDirection="column"
       >
-        <Text> Ola </Text>
+        <Flex flexDirection="column" w="100%" h="300px">
+          {transactions ? (
+            transactions.map((item: any) => {
+              return (
+                <Entries
+                  key={item.id}
+                  type={item.type}
+                  ammount={item.ammount}
+                  description={item.description}
+                  date={item.date}
+                  id={item.id}
+                  getData={getData}
+                />
+              );
+            })
+          ) : (
+            <Text> There is no entries yet</Text>
+          )}
+        </Flex>
+        <Flex w="100%" className="sum" alignItems="center">
+          <p className="balance">Balance</p>
+
+          {transactions &&
+          transactions.reduce((prev, current) => {
+            return current.type === 'income'
+              ? prev + current.ammount
+              : prev - current.ammount;
+          }, 0) >= 0 ? (
+            <p className={`totalPositive`}>
+              R${' '}
+              {transactions &&
+                transactions.reduce((prev, current) => {
+                  return current.type === 'income'
+                    ? prev + current.ammount
+                    : prev - current.ammount;
+                }, 0) / 100}
+              ,00
+            </p>
+          ) : (
+            <p className={`totalNegative`}>
+              R${' '}
+              {transactions
+                ? transactions.reduce((prev, current) => {
+                    return current.type === 'income'
+                      ? prev + current.ammount
+                      : prev - current.ammount;
+                  }, 0) / 100
+                : 0}
+              ,00
+            </p>
+          )}
+        </Flex>
       </Flex>
+
       <Flex gap="5px" mt="16px">
         <TransactionButton
           text="New income"
@@ -67,5 +131,26 @@ const Container = styled(Flex)`
     justify-content: center;
     align-items: center;
     color: #868686;
+  }
+  .totalPositive {
+    color: #03ac00;
+    font-weight: bold;
+  }
+
+  .totalNegative {
+    color: #c70000;
+    font-weight: bold;
+  }
+  .balance {
+    font-weight: bold;
+    font-size: 20px;
+    color: #000000e0;
+  }
+  .sum {
+    justify-content: flex-start;
+    gap: 20px;
+    @media (max-width: 700px) {
+      justify-content: space-between;
+    }
   }
 `;

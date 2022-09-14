@@ -16,22 +16,53 @@ import { BiShowAlt } from 'react-icons/bi';
 import styled from 'styled-components';
 import React, { useState } from 'react';
 import FormFooter from '../components/FormFooter';
+import { useForm } from 'react-hook-form';
+import * as api from '../requests/api';
+import router from 'next/router';
+import Swal from 'sweetalert2';
+import InutWarning from '../components/InutWarning';
 
 const Login: NextPage = () => {
   const [show, setShow] = React.useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
   const handleClick = () => setShow(!show);
+  const [loading, setLoading] = useState(false);
 
-  function handleChange({ name, value }: { name: string; value: string }) {
-    setFormData({ ...formData, [name]: [value] });
-  }
-  function handleSubmit(e: any) {
-    e.preventDefault();
-    console.log(formData);
+  const [error, setError] = useState<any>(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const handleError = (errors: any) => {
+    setError(errors);
+  };
+
+  const registerOptions = {
+    name: { required: 'Name is required' },
+    email: { required: 'Email is required', type: 'email' },
+    password: {
+      required: 'Password is required',
+      minLength: {
+        value: 8,
+        message: 'Password must have at least 8 characters',
+      },
+    },
+  };
+  async function handleRegistration(data: any) {
+    try {
+      await api.signUp(data);
+
+      router.push('/');
+    } catch (error: any) {
+      Swal.fire({
+        text: `${error.response.data}`,
+        background: '#d66767',
+        confirmButtonColor: '#a48bc4',
+        color: '#fff',
+      });
+      setLoading(false);
+    }
   }
 
   return (
@@ -60,13 +91,12 @@ const Login: NextPage = () => {
         gap="5px"
         className="input-box"
         as="form"
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(handleRegistration, handleError)}
       >
         <Input
           placeholder="Name"
-          name="name"
           w="100%"
-          focusBorderColor="white"
+          focusBorderColor="#ffffff00"
           color="#00000090"
           variant="filled"
           fontWeight="bold"
@@ -79,15 +109,14 @@ const Login: NextPage = () => {
             fontFamily: 'Raleway',
             fontSize: '15px',
           }}
-          onChange={(e) =>
-            handleChange({ name: e.target.name, value: e.target.value })
-          }
+          {...register('name', registerOptions.name)}
+          onClick={() => setError(null)}
         />
+        {error?.name && <InutWarning error={error} name="name" />}
         <Input
           placeholder="E-mail"
-          name="email"
           w="100%"
-          focusBorderColor="white"
+          focusBorderColor="#ffffff00"
           color="#00000090"
           variant="filled"
           fontWeight="bold"
@@ -100,15 +129,14 @@ const Login: NextPage = () => {
             fontFamily: 'Raleway',
             fontSize: '15px',
           }}
-          onChange={(e) =>
-            handleChange({ name: e.target.name, value: e.target.value })
-          }
+          {...register('email', registerOptions.email)}
+          onClick={() => setError(null)}
         />
+        {error?.email && <InutWarning error={error} name="email" />}
         <InputGroup size="md" w="100%">
           <Input
             placeholder="Password"
-            name="password"
-            focusBorderColor="white"
+            focusBorderColor="#ffffff00"
             color="#00000090"
             fontWeight="bold"
             fontFamily="Raleway"
@@ -121,9 +149,8 @@ const Login: NextPage = () => {
               fontFamily: 'Raleway',
               fontSize: '15px',
             }}
-            onChange={(e) =>
-              handleChange({ name: e.target.name, value: e.target.value })
-            }
+            {...register('password', registerOptions.password)}
+            onClick={() => setError(null)}
           />
           <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -131,12 +158,14 @@ const Login: NextPage = () => {
             </Button>
           </InputRightElement>
         </InputGroup>
+        {error?.password && <InutWarning error={error} name="password" />}
         <Button
           colorScheme="whiteAlpha"
           variant="solid"
           w="300px"
           mt="5px"
           type="submit"
+          isLoading={loading}
         >
           Submit
         </Button>

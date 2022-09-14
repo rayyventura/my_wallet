@@ -18,15 +18,37 @@ import FormFooter from '../components/FormFooter';
 import * as api from '../requests/api';
 import { useAppContext } from '../contexts/state';
 import { ThreeDots } from 'react-loader-spinner';
+import { useForm } from 'react-hook-form';
+import Swal from 'sweetalert2';
+import InutWarning from '../components/InutWarning';
 
 const Login: NextPage = () => {
+  const { signin } = useAppContext();
+
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({ email: '', password: '' });
+
   const handleClick = () => setShow(!show);
-  const { signin } = useAppContext();
   const auth = typeof window !== 'undefined' && localStorage.getItem('auth');
   const router = useRouter();
+
+  const [error, setError] = useState<any>(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const handleError = (errors: any) => {
+    setError(errors);
+  };
+
+  const registerOptions = {
+    email: { required: 'Email is required', type: 'email' },
+    password: {
+      required: 'Password is required',
+    },
+  };
 
   useMemo(() => {
     if (auth) {
@@ -34,16 +56,28 @@ const Login: NextPage = () => {
     }
   }, []);
 
-  function handleChange({ name, value }: { name: string; value: string }) {
-    setFormData({ ...formData, [name]: value });
-  }
-  async function handleSubmit(e: any) {
+  async function handleRegistration(data: any) {
     try {
-      e.preventDefault();
-      const token = await api.signIn(formData);
-      signin(token);
+      const token = await api.signIn(data);
+
+      await signin(token);
       router.push('/register');
     } catch (error: any) {
+      if (error.response.status === 500) {
+        Swal.fire({
+          text: 'Login failed. Try again!',
+          background: '#d66767',
+          confirmButtonColor: '#a48bc4',
+          color: '#fff',
+        });
+      } else {
+        Swal.fire({
+          text: `${error.response.data}`,
+          background: '#d66767',
+          confirmButtonColor: '#a48bc4',
+          color: '#fff',
+        });
+      }
       setLoading(false);
     }
   }
@@ -74,13 +108,12 @@ const Login: NextPage = () => {
         gap="5px"
         className="input-box"
         as="form"
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(handleRegistration, handleError)}
       >
         <Input
           placeholder="E-mail"
-          name="email"
           w="100%"
-          focusBorderColor="white"
+          focusBorderColor="#ffffff00"
           color="#00000090"
           variant="filled"
           fontWeight="bold"
@@ -93,15 +126,15 @@ const Login: NextPage = () => {
             fontFamily: 'Raleway',
             fontSize: '15px',
           }}
-          onChange={(e) =>
-            handleChange({ name: e.target.name, value: e.target.value })
-          }
+          {...register('email', registerOptions.email)}
+          onClick={() => setError(null)}
         />
+        {error?.email && <InutWarning error={error} name="email" />}
+
         <InputGroup size="md" w="100%">
           <Input
             placeholder="Password"
-            name="password"
-            focusBorderColor="white"
+            focusBorderColor="#ffffff00"
             color="#00000090"
             fontWeight="bold"
             fontFamily="Raleway"
@@ -114,16 +147,17 @@ const Login: NextPage = () => {
               fontFamily: 'Raleway',
               fontSize: '15px',
             }}
-            onChange={(e) =>
-              handleChange({ name: e.target.name, value: e.target.value })
-            }
+            {...register('password', registerOptions.password)}
+            onClick={() => setError(null)}
           />
+
           <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>
               {show ? <Icon as={BiHide} /> : <Icon as={BiShowAlt} />}
             </Button>
           </InputRightElement>
         </InputGroup>
+        {error?.password && <InutWarning error={error} name="password" />}
         <Button
           isLoading={loading}
           spinner={<ThreeDots height={13} width={200} color="white" />}
@@ -151,5 +185,9 @@ const Container = styled(Flex)`
     @media (max-width: 500px) {
       width: 300px;
     }
+  }
+
+  .error {
+    color: red;
   }
 `;
