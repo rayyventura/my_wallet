@@ -74,8 +74,9 @@ export default function Transaction({ title, button, type }: any) {
   return (
     <Flex
       flexDirection="column"
-      justifyContent="center"
+      justifyContent="flex-start"
       alignItems="center"
+      pt="40px"
       w="100%"
       h="100vh"
       padding="12px"
@@ -104,7 +105,7 @@ export default function Transaction({ title, button, type }: any) {
         />
         <Input
           placeholder="Ammount"
-          focusBorderColor="white"
+          focusBorderColor="#ffffff00"
           color="#00000090"
           variant="filled"
           fontWeight="bold"
@@ -133,7 +134,7 @@ export default function Transaction({ title, button, type }: any) {
         />
         <Input
           placeholder="Description"
-          focusBorderColor="white"
+          focusBorderColor="#ffffff00"
           color="#00000090"
           variant="filled"
           fontWeight="bold"

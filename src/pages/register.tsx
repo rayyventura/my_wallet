@@ -15,9 +15,10 @@ export default function Register() {
   const [registerStatus, setRegisterStatus] = useState<string>();
   const { auth, setAuth } = useAppContext();
   const [transactions, setTransaction] = useState<Transaction[]>();
-  const [totalBalance, setTotalBalance] = useState(0);
+
   const router = useRouter();
 
+  console.log(transactions);
   useEffect(() => {
     if (!auth) {
       router.replace('/');
@@ -52,8 +53,13 @@ export default function Register() {
         p="12px"
         flexDirection="column"
       >
-        <Flex flexDirection="column" w="100%" h="300px">
-          {transactions ? (
+        <Flex
+          flexDirection="column"
+          w="100%"
+          h="300px"
+          justifyContent={transactions?.length ? 'flex-start' : 'center'}
+        >
+          {transactions?.length ? (
             transactions.map((item: any) => {
               return (
                 <Entries
@@ -68,7 +74,9 @@ export default function Register() {
               );
             })
           ) : (
-            <Text> There is no entries yet</Text>
+            <Text alignSelf="center" color="#000000a8">
+              There is no entries yet
+            </Text>
           )}
         </Flex>
         <Flex w="100%" className="sum" alignItems="center">
@@ -146,6 +154,7 @@ const Container = styled(Flex)`
     font-size: 20px;
     color: #000000e0;
   }
+
   .sum {
     justify-content: flex-start;
     gap: 20px;
