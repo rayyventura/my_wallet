@@ -13,45 +13,38 @@ export default function Entries({
   id,
   getData,
 }: any) {
-  const [display, setDisplay] = useState('none');
   return (
-    <Container
-      w="90%"
-      onMouseOver={() => {
-        setDisplay('flex');
-      }}
-      onMouseOut={() => {
-        setDisplay('none');
-      }}
-    >
+    <Container w="90%">
       <Flex gap="10px">
         <p className="date">{date}</p>
         <p className="description">{description}</p>
       </Flex>
-      <p className={`${type}`}>$ {ammount / 100},00</p>
-      <p
-        className="delete"
-        style={{ display: `${display}` }}
-        onClick={() => {
-          Swal.fire({
-            title: 'Sure you want to delete this entry?',
-            showDenyButton: true,
-            confirmButtonText: 'Yes, Delete',
-            denyButtonText: `No, Cancel`,
-          }).then((result) => {
-            if (result.isConfirmed) {
-              Swal.fire('Deleted!', '', 'success');
-              api.deleteTransaction(id);
-              getData();
-            } else if (result.isDenied) {
-              Swal.fire('Changes were not saved', '', 'info');
-            }
-          });
-        }}
-      >
-        {' '}
-        x{' '}
-      </p>
+      <Flex gap="10px">
+        <p className={`${type}`}>$ {ammount / 100},00</p>
+        <p
+          className="delete"
+          style={{ alignSelf: 'flex-end' }}
+          onClick={() => {
+            Swal.fire({
+              title: 'Sure you want to delete this entry?',
+              showDenyButton: true,
+              confirmButtonText: 'Yes, Delete',
+              denyButtonText: `No, Cancel`,
+            }).then((result) => {
+              if (result.isConfirmed) {
+                Swal.fire('Deleted!', '', 'success');
+                api.deleteTransaction(id);
+                getData();
+              } else if (result.isDenied) {
+                Swal.fire('Changes were not saved', '', 'info');
+              }
+            });
+          }}
+        >
+          {' '}
+          x{' '}
+        </p>
+      </Flex>
     </Container>
   );
 }
@@ -73,11 +66,13 @@ const Container = styled(Flex)`
   }
   .delete {
     font-weight: bold;
+    color: #3333334b;
   }
   justify-content: flex-start;
 
   gap: 20px;
   @media (max-width: 700px) {
     justify-content: space-between;
+    align-items: center;
   }
 `;

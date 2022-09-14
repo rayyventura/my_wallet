@@ -58,6 +58,7 @@ export default function Register() {
           w="100%"
           h="300px"
           justifyContent={transactions?.length ? 'flex-start' : 'center'}
+          className="transactionData"
         >
           {transactions?.length ? (
             transactions.map((item: any) => {
@@ -154,7 +155,12 @@ const Container = styled(Flex)`
     font-size: 20px;
     color: #000000e0;
   }
-
+  .transactionData {
+    align-items: flex-start;
+    @media (max-width: 700px) {
+      align-items: center;
+    }
+  }
   .sum {
     justify-content: flex-start;
     gap: 20px;
