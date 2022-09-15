@@ -90,7 +90,7 @@ export default function Register() {
               : prev - current.ammount;
           }, 0) >= 0 ? (
             <p className={`totalPositive`}>
-              R${' '}
+              ${' '}
               {transactions &&
                 transactions.reduce((prev, current) => {
                   return current.type === 'income'
